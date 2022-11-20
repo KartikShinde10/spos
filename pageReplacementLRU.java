@@ -1,67 +1,73 @@
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Iterator;
 
-public class pageReplacementLRU {
-    static void pageFaults (int pages[],int n,int capacity) {
-        HashSet<Integer> s = new HashSet<>(capacity);
-        HashMap<Integer,Integer> indexes = new HashMap<>();
 
-        int page_faults = 0;
-        int page_hits = 0;
-        for (int i=0;i<n;i++) {
-            if (s.size() < capacity) {
-                if (!s.contains(pages[i])) {
-                    s.add(pages[i]);
-                    page_faults++;
-                } else {
-                    page_hits++;
-                }
-                indexes.put(pages[i],i);
-                
+public class PageReplacementAlgo {
+	
+	private void lru() {
+		int fsize=0,page_fault=0,page_hit=0,nop=15;
+		Scanner sc=new Scanner(System.in);
+		//System.out.println("Enter No. Of Pages :");
+		//nop=sc.nextInt();
 
-            } else {
-                if (!s.contains(pages[i])) {
-                    int lru = Integer.MAX_VALUE, val = Integer.MIN_VALUE;
-                    Iterator<Integer> itr = s.iterator();
+		HashSet <Integer> s =new HashSet<>(nop);
+		HashMap <Integer,Integer> indexes =new HashMap<>();
+		int pages[] = new int[] {7,0,1,2,0,3,0,4,2,3,0,3,1,2,0};
+		
+		System.out.println("Enter Frame Size :");
+		fsize = sc.nextInt();
+		
+	/*	System.out.println("Enter Pages :");
+		for(int i=0;i<nop;i++) {
+			pages[i]=sc.nextInt();
+		}*/
+		
+		for(int i=0;i<nop;i++) {
+			if(s.size()<fsize) {
+				if(!s.contains(pages[i])) {
+					s.add(pages[i]);
+					page_fault++;
+				}else {
+					page_hit++;
+				}
+				indexes.put(pages[i],i);
+			}else {
+				int lru=Integer.MAX_VALUE,val=Integer.MIN_VALUE;
+				Iterator <Integer> itr = s.iterator();
+				while(itr.hasNext()) {
+					int temp = itr.next();
+					if(indexes.get(temp)<lru) {
+						lru = indexes.get(temp);
+						val = temp;
+					}
+				}
+				if(!s.contains(pages[i])) {
+					s.add(pages[i]);
+					page_fault++;
+				}else {
+					page_hit++;
+				}
 
-                    while (itr.hasNext()) {
-                        int temp = itr.next();
-                        if (indexes.get(temp) < lru) {
-                            lru = indexes.get(temp);
-                            val = temp;
-                        }
-                    } 
-                    s.remove(val);
-                    indexes.remove(val);
-                    s.add(pages[i]);
-                    page_faults++;
-                } else {
-                    page_hits++;
-                }
-                indexes.put(pages[i],i);
-            }
-        } 
-        System.out.println("page faults = " + page_faults + "\tpage hits = " + page_hits);
-    }
-    public static void main(String[] args) {
-
-        Scanner in = new Scanner(System.in);
-
-        System.out.print("Enter no of pages : ");
-        int n = in.nextInt();
-        int pages[] = new int[n];
-        System.out.println("Enter the pages : ");
-        for (int i=0;i<n;i++) {
-
-            pages[i] = in.nextInt();
-        }
-        System.out.println("Enter the capacity : ");
-        int capacity = in.nextInt();
-            
-        pageFaults(pages, pages.length, capacity);
-        
-        in.close();
-    }
+				s.remove(val);
+				s.add(pages[i]);
+				indexes.put(pages[i],i);
+			}
+			System.out.print(" "+s);
+		}
+		System.out.println("Faults "+page_fault);
+		System.out.println("Hits "+page_hit);
+		
+}
+		
+	
+	public static void main(String args[])
+	{
+		PageReplacementAlgo P =new PageReplacementAlgo();
+		P.lru();
+		//P.optimal();
+				
+	}
+	
 }
